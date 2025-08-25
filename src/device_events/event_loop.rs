@@ -7,7 +7,7 @@ use {DeviceQuery, MouseCallbacks};
 use {DeviceState, Keycode};
 use {MouseButton, MousePosition};
 
-pub(crate) struct EventLoop {
+pub struct EventLoop {
     keyboard_callbacks: Arc<KeyboardCallbacks>,
     mouse_callbacks: Arc<MouseCallbacks>,
     _keyboard_thread: JoinHandle<()>,
@@ -70,7 +70,7 @@ impl Default for EventLoop {
 }
 
 impl EventLoop {
-    fn new(sleep_dur: Duration) -> Self {
+    pub fn new(sleep_dur: Duration) -> Self {
         let keyboard_callbacks = Arc::new(KeyboardCallbacks::default());
         let mouse_callbacks = Arc::new(MouseCallbacks::default());
         let _keyboard_thread = keyboard_thread(Arc::downgrade(&keyboard_callbacks), sleep_dur);
@@ -129,9 +129,9 @@ impl EventLoop {
     }
 }
 
-pub(crate) static EVENT_LOOP: LazyLock<Mutex<Option<EventLoop>>> = LazyLock::new(|| Default::default());
+pub static EVENT_LOOP: LazyLock<Mutex<Option<EventLoop>>> = LazyLock::new(|| Default::default());
 
-pub(crate) fn init_event_loop(sleep_dur: Duration) -> bool {
+pub fn init_event_loop(sleep_dur: Duration) -> bool {
     let Ok(mut lock) = EVENT_LOOP.lock() else {
         return false;
     };
